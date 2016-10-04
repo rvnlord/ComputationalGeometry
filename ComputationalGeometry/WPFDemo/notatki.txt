@@ -1,0 +1,40 @@
+//if (polygon.Vertices.Count < 3)
+//    throw new ArgumentException("Wielok¹t nie mo¿e mieæ poni¿ej trzech wierzcho³ków");
+
+//var minX = vertices.MinBy(p => p.X).X;
+//if (point.X < minX)
+//    return false;
+//var edges = polygon.Edges(true).ToList();
+//if (edges.Any(edge => edge.Contains(point)))
+//    return true;
+//var testSegment = new LineSegmentFr(new PointFr(minX, point.Y), point, true);
+//var intersections = edges.Where(edge => edge.Intersects(testSegment))
+//    .Select(edge => new { Edge = edge, Intersection = edge.Intersection(testSegment) })
+//    .GroupBy(inter => inter.Intersection)
+//    .ToDictionary(kvp => (PointFr) kvp.Key, kvp => kvp.Select(g => g.Edge).ToList());
+//foreach (var kvp in intersections)
+//{
+//    if (kvp.Value.Count > 2)
+//        throw new Exception("testowy odcinek nie mo¿e przecinaæ wiêcej ni¿ dwóch krawêdzi, b³¹d obliczeñ");
+//    var endpoint1 = kvp.Value[0].EndPoints().Single(endp => endp != kvp.Key);
+//    var endpoint2 = kvp.Value[1].EndPoints().Single(endp => endp != kvp.Key);
+//    if (endpoint1.X > )
+//}
+
+//var endpoints = edges.Select(edge => edge.EndPoints()).ToList();
+//var pointContained = endpoints.GroupBy(ends => ends.First()).Concat(endpoints.GroupBy(ends => ends.Last()).Distinct(); //.Distinct().Where(p => testSegment.Contains(p)).ToList();
+//return  % 2 == 1;
+//return polygon.Contains2(point);
+
+// http://alienryderflex.com/polygon/
+
+//var result = false;
+//var j = _vertices.Count - 1;
+//for (var i = 0; i<_vertices.Count(); i++)
+//{
+//    if (_vertices[i].Y<point.Y && _vertices[j].Y >= point.Y || _vertices[j].Y<point.Y && _vertices[i].Y >= point.Y)
+//        if (_vertices[i].X + (point.Y - _vertices[i].Y) / (_vertices[j].Y - _vertices[i].Y) * (_vertices[j].X - _vertices[i].X) < point.X)
+//            result = !result;
+//    j = i;
+//}
+//return result;
