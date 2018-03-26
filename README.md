@@ -1,4 +1,4 @@
-# WPF COmputational Geometry - Overview of Features:
+# WPF Computational Geometry - Overview of Features:
 **WARNING:** No english localization available at this time
 
 **Drawing:**
