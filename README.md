@@ -32,7 +32,7 @@
 ![ComputationalGeometry4](/Images/2018-03-26_152916.png?raw=true "ComputationalGeometry4")
 
 <b>Download: [WPFComputationalGeometry](https://github.com/rvnlord/ComputationalGeometry/releases/download/v1.00/WPFComputationalGeometry.zip)</b> <br />
-<br /><br />
+<br />
 WPFComputationalGeometry.exe Checksum:<br />
 CRC32: BD01F81E<br />
 MD5: 296DEC756E9E19BD112575716D6AC9FE<br />
