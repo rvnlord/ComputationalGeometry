@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -15,6 +16,7 @@ using System.Windows.Shapes;
 using System.Xml;
 using System.Xml.Linq;
 using Telerik.Windows.Controls;
+using WPFComputationalGeometry.Common;
 using WPFDemo.Models;
 using static WPFDemo.Models.GeometryCalculations;
 using Label = System.Windows.Controls.Label;
@@ -2332,94 +2334,75 @@ namespace WPFDemo
 
         private void TxtSaveToFile_MouseDown(object sender, MouseButtonEventArgs e)
         {
+            var senderElement = sender as FrameworkElement;
+            if (senderElement == null) return;
+
+            var root = new XElement("ChartData");
+            var doc = new XDocument(new XDeclaration("1.0", "utf-8", "yes"), root);
             var db = (DbContext)DataContext;
-            var virtualFileDataObject = new VirtualFileDataObject(null, vfdo =>
+
+            foreach (var ce in db.ChartElements.OrderBy(ce => ce.ElementType))
             {
-                if (DragDropEffects.Move == vfdo.PerformedDropEffect)
+                if (ce.ElementType == ElementType.Point)
                 {
-                    Dispatcher.BeginInvoke((Action)(() => LblCalculations.Content = new TextBlock
-                    {
-                        Text = "Plik został pomyślnie zapisany"
-                    }));
+                    root.Add(new XElement("Point",
+                        new XAttribute("x", ce.XStartGridRelative),
+                        new XAttribute("y", ce.YStartGridRelative)));
                 }
-            });
-
-            virtualFileDataObject.SetData(new[]
-            {
-                new VirtualFileDataObject.FileDescriptor
+                else if (ce.ElementType == ElementType.Line && ce.XEndGridRelative != null && ce.YEndGridRelative != null)
                 {
-                    Name = "ChartData.xml",
-                    ChangeTimeUtc = DateTime.Now,
-                    StreamContents = stream =>
-                    {
-                        var root = new XElement("ChartData");
-                        var doc = new XDocument(new XDeclaration("1.0", "utf-8", "yes"), root);
-                        
-                        foreach (var ce in db.ChartElements.OrderBy(ce => ce.ElementType))
-                        {
-                            if (ce.ElementType == ElementType.Point)
-                            {
-                                root.Add(new XElement("Point", 
-                                    new XAttribute("x", ce.XStartGridRelative),
-                                    new XAttribute("y", ce.YStartGridRelative)));
-                            }
-                            else if (ce.ElementType == ElementType.Line && ce.XEndGridRelative != null && ce.YEndGridRelative != null)
-                            {
-                                root.Add(new XElement("Segment",
-                                    new XElement("EndPoint",                                     
-                                        new XAttribute("x", ce.XStartGridRelative),
-                                        new XAttribute("y", ce.YStartGridRelative)),
-                                    new XElement("EndPoint",
-                                        new XAttribute("x", ce.XEndGridRelative),
-                                        new XAttribute("y", ce.YEndGridRelative))
-                                    )
-                                );
-                            }
-                            else if (ce.ElementType == ElementType.Polygon)
-                            {
-                                var xPolygon = new XElement("Polygon");
-                                foreach (var v in ce.Vertices)
-                                    xPolygon.Add(new XElement("Vertex",
-                                        new XAttribute("x", v.X),
-                                        new XAttribute("y", v.Y)));
-                                root.Add(xPolygon);
-                            }
-                        }
-
-                        var enc = Encoding.UTF8;
-                        var m = new MemoryStream();
-                        using (var tx = XmlWriter.Create(m, new XmlWriterSettings
-                        {
-                            OmitXmlDeclaration = false,
-                            ConformanceLevel = ConformanceLevel.Document,
-                            Encoding = enc,
-                            Indent = true,
-                        }))
-                        {
-                            doc.WriteTo(tx);
-                        }
-                        var bytesDoc = m.ToArray();
-                        stream.Write(bytesDoc, 0, bytesDoc.Length);
-                    }
-                },
-            });
-            DoDragDropOrClipboardSetDataObject(e.ChangedButton, (TextBox)sender, virtualFileDataObject, DragDropEffects.Move);
-        }
-        
-        private static void DoDragDropOrClipboardSetDataObject(MouseButton button, DependencyObject dragSource, VirtualFileDataObject virtualFileDataObject, DragDropEffects allowedEffects)
-        {
-            try
-            {
-                if (button == MouseButton.Left)
-                    VirtualFileDataObject.DoDragDrop(dragSource, virtualFileDataObject, allowedEffects); // Lewy przycisk zaczyna DnD
-                else if (button == MouseButton.Right)
+                    root.Add(new XElement("Segment",
+                        new XElement("EndPoint",
+                            new XAttribute("x", ce.XStartGridRelative),
+                            new XAttribute("y", ce.YStartGridRelative)),
+                        new XElement("EndPoint",
+                            new XAttribute("x", ce.XEndGridRelative),
+                            new XAttribute("y", ce.YEndGridRelative))
+                        )
+                    );
+                }
+                else if (ce.ElementType == ElementType.Polygon)
                 {
-                    virtualFileDataObject.PreferredDropEffect = allowedEffects; // Prawy przycisk kopiuje do schowka
-                    Clipboard.SetDataObject(virtualFileDataObject);
+                    var xPolygon = new XElement("Polygon");
+                    foreach (var v in ce.Vertices)
+                        xPolygon.Add(new XElement("Vertex",
+                            new XAttribute("x", v.X),
+                            new XAttribute("y", v.Y)));
+                    root.Add(xPolygon);
                 }
             }
-            catch (COMException)
-            { }
+
+            var enc = Encoding.UTF8;
+            var m = new MemoryStream();
+            using (var tx = XmlWriter.Create(m, new XmlWriterSettings
+            {
+                OmitXmlDeclaration = false,
+                ConformanceLevel = ConformanceLevel.Document,
+                Encoding = enc,
+                Indent = true,
+            }))
+            {
+                doc.WriteTo(tx);
+            }
+
+            var fd = new FileDescriptor
+            {
+                Name = "ChartData.xml",
+                Contents = m.ToArray()
+            };
+            var fullPath = SaveFIleToTemp(fd);
+            var dragObj = new DataObject();
+            dragObj.SetFileDropList(new StringCollection { fullPath });
+            DragDrop.DoDragDrop(senderElement, dragObj, DragDropEffects.Copy);
+        }
+
+        private static string SaveFIleToTemp(FileDescriptor file)
+        {
+            var tempFilePath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), file.Name);
+            Stream fs = File.Create(tempFilePath);
+            new BinaryWriter(fs).Write(file.Contents);
+            fs.Close();
+            return tempFilePath;
         }
 
         private List<UIElement> SelectedElements()

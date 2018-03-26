@@ -124,6 +124,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Common\FileDescriptor.cs" />
     <Compile Include="Models\BigInteger.cs" />
     <Compile Include="Models\ChartElement.cs" />
     <Compile Include="Models\Circle.cs" />
@@ -159,7 +160,6 @@
     <Compile Include="Models\SweepLine.cs" />
     <Compile Include="Models\Triangle.cs" />
     <Compile Include="Models\TriangleFr.cs" />
-    <Compile Include="Models\VirtualFileDataObject.cs" />
     <Compile Include="Themes\DarkBlend\LeftMarginMultiplierConverter.cs" />
     <Compile Include="Themes\DarkBlend\TreeViewItemExtensions.cs" />
     <Page Include="MainWindow.xaml">
@@ -239,7 +239,6 @@
     <None Include="FodyWeavers.xml" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Common\" />
     <Folder Include="Controllers\" />
   </ItemGroup>
   <ItemGroup>
