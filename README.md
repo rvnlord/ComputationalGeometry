@@ -2,7 +2,7 @@
 
 ### Download:
 
-[![Download](https://img.shields.io/badge/Dwonload-WPFComputationalGeometry----v1.01.exe-darkblue)](https://github.com/rvnlord/WPFComputationalGeometry/releases/download/v1.01/WPFComputationalGeometry-v1.01.exe)
+[![Download](https://img.shields.io/badge/Dwonload-WPFComputationalGeometry----v1.01.exe-darkblue)](https://github.com/rvnlord/ComputationalGeometry/releases/download/v1.01/WPFComputationalGeometry-v1.01.exe)
 ![SHA256](https://img.shields.io/badge/SHA256-7B108D45CC8885538CE12BCCFA98ADE5A5E83955728A00D5A0A47BCBA81C5034-darkgreen.svg)
 
 ### Overview of Features:
