@@ -56,16 +56,24 @@
       <HintPath>..\packages\KdTree.1.0.2\lib\net45\KdTreeLib.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="MoreLinq, Version=1.4.18916.0, Culture=neutral, PublicKeyToken=384d532d7e88985d, processorArchitecture=MSIL">
-      <HintPath>..\packages\morelinq.1.4.0\lib\net35\MoreLinq.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="MoreLinq, Version=3.2.0.0, Culture=neutral, PublicKeyToken=384d532d7e88985d, processorArchitecture=MSIL">
+      <HintPath>..\packages\morelinq.3.2.0\lib\netstandard1.0\MoreLinq.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Runtime.InteropServices.RuntimeInformation, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.InteropServices.RuntimeInformation.4.3.0\lib\net45\System.Runtime.InteropServices.RuntimeInformation.dll</HintPath>
+    </Reference>
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceModel" />
+    <Reference Include="System.ValueTuple, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.4.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
+    </Reference>
     <Reference Include="System.Windows.Controls.Input.Toolkit, Version=3.5.40128.1, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Infragistics.Themes.MetroDark.Wpf.1.0.0\lib\net40\System.Windows.Controls.Input.Toolkit.dll</HintPath>
       <Private>True</Private>
@@ -84,30 +92,6 @@
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
-    <Reference Include="Telerik.Windows.Controls">
-      <HintPath>..\lib\RCWPF\2017.2.503.45.NoXaml\Telerik.Windows.Controls.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Telerik.Windows.Controls.DataVisualization">
-      <HintPath>..\lib\RCWPF\2017.2.503.45.NoXaml\Telerik.Windows.Controls.DataVisualization.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Telerik.Windows.Controls.GridView">
-      <HintPath>..\lib\RCWPF\2017.2.503.45.NoXaml\Telerik.Windows.Controls.GridView.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Telerik.Windows.Controls.Input">
-      <HintPath>..\lib\RCWPF\2017.2.503.45.NoXaml\Telerik.Windows.Controls.Input.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Telerik.Windows.Data">
-      <HintPath>..\lib\RCWPF\2017.2.503.45.NoXaml\Telerik.Windows.Data.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Telerik.Windows.Themes.Expression_Dark">
-      <HintPath>..\lib\RCWPF\2017.2.503.45.NoXaml\Telerik.Windows.Themes.Expression_Dark.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="UIAutomationProvider" />
     <Reference Include="UIAutomationTypes" />
     <Reference Include="WindowsBase" />
@@ -124,45 +108,55 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Common\FileDescriptor.cs" />
-    <Compile Include="Models\BigInteger.cs" />
-    <Compile Include="Models\ChartElement.cs" />
-    <Compile Include="Models\Circle.cs" />
-    <Compile Include="Models\CircleFr.cs" />
-    <Compile Include="Models\ColorConverter.cs" />
-    <Compile Include="Models\DbContext.cs" />
-    <Compile Include="Models\DdlItem.cs" />
-    <Compile Include="Models\EventPoint.cs" />
-    <Compile Include="Models\EventQueue.cs" />
-    <Compile Include="Models\ExtensionMethods.cs" />
-    <Compile Include="Models\Fraction.cs" />
-    <Compile Include="Models\FractionException.cs" />
-    <Compile Include="Models\GeometryCalculations.cs" />
-    <Compile Include="Models\HeapMethods.cs" />
-    <Compile Include="Models\Line.cs" />
-    <Compile Include="Models\LineFr.cs" />
-    <Compile Include="Models\LineSegment.cs" />
-    <Compile Include="Models\LineSegmentFr.cs" />
-    <Compile Include="Models\Point.cs" />
-    <Compile Include="Models\PointFr.cs" />
-    <Compile Include="Models\PointFrAngularComparer.cs" />
-    <Compile Include="Models\PointFrXThenYComparer.cs" />
-    <Compile Include="Models\PointXCoordComparer.cs" />
-    <Compile Include="Models\PointAngularComparer.cs" />
-    <Compile Include="Models\EventPointXThenYComparer.cs" />
-    <Compile Include="Models\PointXThenYComparer.cs" />
-    <Compile Include="Models\PointYCoordComparer.cs" />
-    <Compile Include="Models\PolarAngleComparer.cs" />
-    <Compile Include="Models\Polygon.cs" />
-    <Compile Include="Models\PolygonFr.cs" />
-    <Compile Include="Models\PriorityQueue.cs" />
-    <Compile Include="Models\SkipList.cs" />
-    <Compile Include="Models\SweepLine.cs" />
-    <Compile Include="Models\Triangle.cs" />
-    <Compile Include="Models\TriangleFr.cs" />
-    <Compile Include="Themes\DarkBlend\LeftMarginMultiplierConverter.cs" />
-    <Compile Include="Themes\DarkBlend\TreeViewItemExtensions.cs" />
-    <Page Include="MainWindow.xaml">
+    <Compile Include="Source\Common\Converters\DecimalConverter.cs" />
+    <Compile Include="Source\Common\Converters\DoubleConverter.cs" />
+    <Compile Include="Source\Common\Converters\TextBoxConverter.cs" />
+    <Compile Include="Source\Common\Extensions\CGPointExtensions.cs" />
+    <Compile Include="Source\Common\Extensions\Collections\IEnumerableExtensions.cs" />
+    <Compile Include="Source\Common\Extensions\Collections\StackExtensions.cs" />
+    <Compile Include="Source\Common\Extensions\DecimalExtensions.cs" />
+    <Compile Include="Source\Common\Extensions\DependencyObjectExtensions.cs" />
+    <Compile Include="Source\Common\Extensions\DoubleExtensions.cs" />
+    <Compile Include="Source\Common\Extensions\StringExtensions.cs" />
+    <Compile Include="Source\Common\Extensions\TextBoxExtensions.cs" />
+    <Compile Include="Source\Common\Extensions\XDocumentExtensions.cs" />
+    <Compile Include="Source\Common\FileDescriptor.cs" />
+    <Compile Include="Source\Common\NumericBox.cs" />
+    <Compile Include="Source\Models\BigInteger.cs" />
+    <Compile Include="Source\Models\ChartElement.cs" />
+    <Compile Include="Source\Models\Circle.cs" />
+    <Compile Include="Source\Models\CircleFr.cs" />
+    <Compile Include="Source\Models\ColorConverter.cs" />
+    <Compile Include="Source\Models\DbContext.cs" />
+    <Compile Include="Source\Models\DdlItem.cs" />
+    <Compile Include="Source\Models\EventPoint.cs" />
+    <Compile Include="Source\Models\EventQueue.cs" />
+    <Compile Include="Source\Models\Fraction.cs" />
+    <Compile Include="Source\Models\FractionException.cs" />
+    <Compile Include="Source\Models\GeometryCalculations.cs" />
+    <Compile Include="Source\Models\HeapMethods.cs" />
+    <Compile Include="Source\Models\Line.cs" />
+    <Compile Include="Source\Models\LineFr.cs" />
+    <Compile Include="Source\Models\LineSegment.cs" />
+    <Compile Include="Source\Models\LineSegmentFr.cs" />
+    <Compile Include="Source\Models\Point.cs" />
+    <Compile Include="Source\Models\PointFr.cs" />
+    <Compile Include="Source\Models\PointFrAngularComparer.cs" />
+    <Compile Include="Source\Models\PointFrXThenYComparer.cs" />
+    <Compile Include="Source\Models\PointXCoordComparer.cs" />
+    <Compile Include="Source\Models\PointAngularComparer.cs" />
+    <Compile Include="Source\Models\EventPointXThenYComparer.cs" />
+    <Compile Include="Source\Models\PointXThenYComparer.cs" />
+    <Compile Include="Source\Models\PointYCoordComparer.cs" />
+    <Compile Include="Source\Models\PolarAngleComparer.cs" />
+    <Compile Include="Source\Models\Polygon.cs" />
+    <Compile Include="Source\Models\PolygonFr.cs" />
+    <Compile Include="Source\Models\PriorityQueue.cs" />
+    <Compile Include="Source\Models\SkipList.cs" />
+    <Compile Include="Source\Models\SweepLine.cs" />
+    <Compile Include="Source\Models\Triangle.cs" />
+    <Compile Include="Source\Models\TriangleFr.cs" />
+    <Page Include="Source\Windows\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -170,7 +164,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="MainWindow.xaml.cs">
+    <Compile Include="Source\Windows\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
@@ -198,10 +192,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Themes\DarkBlend\Styles.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">
@@ -217,7 +207,6 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <EmbeddedResource Include="Properties\Licenses.licx" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -233,14 +222,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Themes\MetroDark\HowToApplyTheme.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="FodyWeavers.xml" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Controllers\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Resource Include="Resources\Icons\Icon.ico" />
     <Resource Include="Resources\Icons\Icon.png" />
