@@ -9,17 +9,17 @@ using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
-using System.Windows.Threading;
 using System.Xml;
 using System.Xml.Linq;
 using WPFComputationalGeometry.Source.Common;
 using WPFComputationalGeometry.Source.Common.Converters;
 using WPFComputationalGeometry.Source.Common.Extensions;
 using WPFComputationalGeometry.Source.Models;
-using ColorConverter = WPFComputationalGeometry.Source.Models.ColorConverter;
+using ColorConverter = WPFComputationalGeometry.Source.Common.Converters.ColorConverter;
 using Label = System.Windows.Controls.Label;
 using Path = System.Windows.Shapes.Path;
 using Line = System.Windows.Shapes.Line;
@@ -28,11 +28,28 @@ using Polygon = System.Windows.Shapes.Polygon;
 using Point = System.Windows.Point;
 using CGPoint = WPFComputationalGeometry.Source.Models.Point;
 using MoreLinq;
+using WPFComputationalGeometry.Source.Common.Utils;
+using WPFComputationalGeometry.Source.Common.Utils.UtilsClasses;
+using WPFComputationalGeometry.Source.Models.Comparers;
+using Button = System.Windows.Controls.Button;
+using ComboBox = System.Windows.Controls.ComboBox;
+using DataFormats = System.Windows.DataFormats;
+using DataObject = System.Windows.DataObject;
+using DragDropEffects = System.Windows.DragDropEffects;
+using DragEventArgs = System.Windows.DragEventArgs;
+using HorizontalAlignment = System.Windows.HorizontalAlignment;
+using KeyEventArgs = System.Windows.Input.KeyEventArgs;
+using MessageBox = System.Windows.MessageBox;
+using MouseEventArgs = System.Windows.Input.MouseEventArgs;
+using Panel = System.Windows.Controls.Panel;
+using TextBox = System.Windows.Controls.TextBox;
 
 namespace WPFComputationalGeometry.Source.Windows
 {
     public partial class MainWindow
     {
+        private NotifyIcon _notifyIcon;
+
         private int _gridDensity = 20;
         private const int _chartAxisDiff = 10;
         private Point _middlePoint;
@@ -56,6 +73,19 @@ namespace WPFComputationalGeometry.Source.Windows
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
+            // Inicjuj kontrolki
+
+            var iconHandle = Properties.Resources.NotifyIcon.GetHicon();
+            var icon = System.Drawing.Icon.FromHandle(iconHandle);
+
+            _notifyIcon = new NotifyIcon
+            {
+                BalloonTipTitle = lblWindowTitle.Content.ToString(),
+                BalloonTipText = @"is hidden here",
+                Icon = icon
+            };
+            _notifyIcon.Click += notifyIcon_Click;
+
             TxtSaveToFile.PreviewMouseLeftButtonDown += TxtSaveToFile_MouseDown;
             TxtSaveToFile.PreviewMouseRightButtonDown += TxtSaveToFile_MouseDown;
             var db = new DbContext();
@@ -75,7 +105,7 @@ namespace WPFComputationalGeometry.Source.Windows
             RnumYEnd.ToNumericBox(2);
             RnumSamples.ToNumericBox(0, 0, 100000);
 
-            GridMain.Children.OfType<Grid>().FirstOrDefault(grid => grid.Name == "GridControls")?.Children.OfType<TextBox>().ForEach(t =>
+            gridMain.Children.OfType<Grid>().FirstOrDefault(grid => grid.Name == "GridControls")?.Children.OfType<TextBox>().ForEach(t =>
             {
                 if (t.Name.StartsWith("Rnum"))
                     return;
@@ -822,7 +852,6 @@ namespace WPFComputationalGeometry.Source.Windows
 
                 //RgvData.ItemsSource = db.ChartElements;
                 RgvData.Items.Refresh();
-                HighlightSelectedRows();
             }
             else if (selected != null && selected.ElementType == ElementType.Point)
             {
@@ -846,7 +875,6 @@ namespace WPFComputationalGeometry.Source.Windows
 
                 //RgvData.ItemsSource = db.ChartElements;
                 RgvData.Items.Refresh();
-                HighlightSelectedRows();
             }
         }
 
@@ -875,7 +903,7 @@ namespace WPFComputationalGeometry.Source.Windows
                     if (selitemsCount != 2 || selectedSegmentsCount != 1 || selectedPointsCount != 1)
                     {
                         MessageBox.Show(
-                            $"You should select 1 Segment and 1 Point, currently selected: Segments: {selectedSegmentsCount}, Points: {selectedPointsCount}",
+                            $"You should select 1 Segment and 1 Point, currently selected Segments: {selectedSegmentsCount}, Points: {selectedPointsCount}",
                             "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                         return;
                     }
@@ -902,7 +930,7 @@ namespace WPFComputationalGeometry.Source.Windows
                     if (selitemsCount != 2 || selectedSegmentsCount != 1 || selectedPointsCount != 1)
                     {
                         MessageBox.Show(
-                            $"You should select 1 Segment and 1 Point, currently selected: Segments: {selectedSegmentsCount}, Points: {selectedPointsCount}",
+                            $"You should select 1 Segment and 1 Point, currently selected Segments: {selectedSegmentsCount}, Points: {selectedPointsCount}",
                             "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                         return;
                     }
@@ -1575,7 +1603,7 @@ namespace WPFComputationalGeometry.Source.Windows
             }
         }
 
-        private void BtnTest_Click(object sender, RoutedEventArgs e)
+        private async void BtnTest_Click(object sender, RoutedEventArgs e)
         {
             UpdateInputs();
             
@@ -1597,51 +1625,53 @@ namespace WPFComputationalGeometry.Source.Windows
                             "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                         return;
                     }
-                    var pointsAmmount = (int) pointsAmmountDbl;
 
                     var sb = new StringBuilder();
-                    sb.Append("Algorithm Time:\n");
 
-                    var rng = new Random(10);
-                    var points = Enumerable.Range(0, pointsAmmount).Select(i =>
-                        new CGPoint(
-                            Math.Round(rng.Next(threshold * 2 - 1) + rng.NextDouble() - threshold, 2),
-                            Math.Round(rng.Next(threshold * 2 - 1) + rng.NextDouble() - threshold, 2)))
-                        .Distinct().ToList();
-
-                    while (points.Count < pointsAmmount)
+                    await AsyncUtils.AsyncWithLoader(gridMain, this.LogicalDescendants<Button>().ToArray(), () =>
                     {
+                        var pointsAmmount = (int)pointsAmmountDbl;
+
+                        sb.Append("Algorithm Time:\n");
+
+                        var rng = new Random(10);
+                        var points = Enumerable.Range(0, pointsAmmount).Select(i =>
+                            new CGPoint(
+                                Math.Round(rng.Next(threshold * 2 - 1) + rng.NextDouble() - threshold, 2),
+                                Math.Round(rng.Next(threshold * 2 - 1) + rng.NextDouble() - threshold, 2)))
+                            .Distinct().ToList();
+
                         while (points.Count < pointsAmmount)
                         {
-                            points.Add(new Point(
-                                Math.Round(rng.Next(threshold * 2 - 1) + rng.NextDouble() - threshold, 2),
-                                Math.Round(rng.Next(threshold * 2 - 1) + rng.NextDouble() - threshold, 2)));
+                            while (points.Count < pointsAmmount)
+                            {
+                                points.Add(new Point(
+                                    Math.Round(rng.Next(threshold * 2 - 1) + rng.NextDouble() - threshold, 2),
+                                    Math.Round(rng.Next(threshold * 2 - 1) + rng.NextDouble() - threshold, 2)));
+                            }
+                            points = points.Distinct().ToList();
                         }
-                        points = points.Distinct().ToList();
-                    }
 
-                    var sw = Stopwatch.StartNew();
-                    var resultBruteForce = GeometryCalculations.PointsClosestPairBruteForce(points);
-                    sw.Stop();
-                    sb.Append($"{sw.Elapsed.TotalMilliseconds} ms - Naive\n");
+                        var sw = Stopwatch.StartNew();
+                        var resultBruteForce = GeometryCalculations.PointsClosestPairBruteForce(points).NormalizeEndPoints();
+                        sw.Stop();
+                        sb.Append($"{sw.Elapsed.TotalMilliseconds} ms - Naive\n");
 
-                    var sw1 = Stopwatch.StartNew();
-                    var resultIterative = GeometryCalculations.PointsClosestPairIterative(points);
-                    sw1.Stop();
-                    sb.Append($"{sw1.Elapsed.TotalMilliseconds} ms - Iterative\n");
+                        var sw1 = Stopwatch.StartNew();
+                        var resultIterative = GeometryCalculations.PointsClosestPairIterative(points).NormalizeEndPoints();
+                        sw1.Stop();
+                        sb.Append($"{sw1.Elapsed.TotalMilliseconds} ms - Iterative\n");
 
-                    var sw2 = Stopwatch.StartNew();
-                    var resultRecursive = GeometryCalculations.PointsClosestPairRecursive(points);
-                    sw2.Stop();
-                    sb.Append($"{sw2.Elapsed.TotalMilliseconds} ms - Recursive (Divide and Conquer)");
+                        var sw2 = Stopwatch.StartNew();
+                        var resultRecursive = GeometryCalculations.PointsClosestPairRecursive(points).NormalizeEndPoints();
+                        sw2.Stop();
+                        sb.Append($"{sw2.Elapsed.TotalMilliseconds} ms - Recursive (Divide and Conquer)");
 
-                    if (!resultBruteForce.Equals(resultIterative) || !resultBruteForce.Equals(resultRecursive))
-                        throw new Exception("One of the algorithms is incorrect");
+                        if (!resultBruteForce.Equals(resultIterative) || !resultBruteForce.Equals(resultRecursive))
+                            throw new Exception("One of the algorithms is incorrect");
+                    });
 
-                    LblCalculations.Content = new TextBlock
-                    {
-                        Text = sb.ToString()
-                    };
+                    LblCalculations.Content = new TextBlock { Text = sb.ToString() };
 
                     break;
                 }
@@ -1665,73 +1695,74 @@ namespace WPFComputationalGeometry.Source.Windows
                     var segmentsAmmount = (int) segmentsAmmountDbl;
 
                     var sb = new StringBuilder();
-                    sb.Append("Algorithm Time:\n");
 
-                    var rng = new Random();
-                    var segments = Enumerable.Range(0, segmentsAmmount).Select(i =>
-                        new LineSegment(
-                            new Point(
-                                Math.Round(rng.Next(threshold * 2 - 1) + rng.NextDouble() - threshold, 2),
-                                Math.Round(rng.Next(threshold * 2 - 1) + rng.NextDouble() - threshold, 2)),
-                            new Point(
-                                Math.Round(rng.Next(threshold * 2 - 1) + rng.NextDouble() - threshold, 2),
-                                Math.Round(rng.Next(threshold * 2 - 1) + rng.NextDouble() - threshold, 2))))
-                        .Distinct().ToList();
-
-                    while (segments.Count < segmentsAmmount)
+                    await AsyncUtils.AsyncWithLoader(gridMain, this.LogicalDescendants<Button>().ToArray(), () =>
                     {
-                        while (segments.Count < segmentsAmmount)
-                        {
-                            segments.Add(new LineSegment(
+                        sb.Append("Algorithm Time:\n");
+
+                        var rng = new Random();
+                        var segments = Enumerable.Range(0, segmentsAmmount).Select(i =>
+                            new LineSegment(
                                 new Point(
                                     Math.Round(rng.Next(threshold * 2 - 1) + rng.NextDouble() - threshold, 2),
                                     Math.Round(rng.Next(threshold * 2 - 1) + rng.NextDouble() - threshold, 2)),
                                 new Point(
                                     Math.Round(rng.Next(threshold * 2 - 1) + rng.NextDouble() - threshold, 2),
-                                    Math.Round(rng.Next(threshold * 2 - 1) + rng.NextDouble() - threshold, 2))));
+                                    Math.Round(rng.Next(threshold * 2 - 1) + rng.NextDouble() - threshold, 2))))
+                            .Distinct().ToList();
+
+                        while (segments.Count < segmentsAmmount)
+                        {
+                            while (segments.Count < segmentsAmmount)
+                            {
+                                segments.Add(new LineSegment(
+                                    new Point(
+                                        Math.Round(rng.Next(threshold * 2 - 1) + rng.NextDouble() - threshold, 2),
+                                        Math.Round(rng.Next(threshold * 2 - 1) + rng.NextDouble() - threshold, 2)),
+                                    new Point(
+                                        Math.Round(rng.Next(threshold * 2 - 1) + rng.NextDouble() - threshold, 2),
+                                        Math.Round(rng.Next(threshold * 2 - 1) + rng.NextDouble() - threshold, 2))));
+                            }
+                            segments = segments.Distinct().ToList();
                         }
-                        segments = segments.Distinct().ToList();
-                    }
 
-                    var comparer = new PointXThenYComparer();
-                    var sw = Stopwatch.StartNew();
-                    var resultsNaiveRaw = GeometryCalculations.IntersectionsNaive(segments);
+                        var comparer = new PointXThenYComparer();
+                        var sw = Stopwatch.StartNew();
+                        var resultsNaiveRaw = GeometryCalculations.IntersectionsNaive(segments);
 
-                    sw.Stop();
-                    var resultsNaive = resultsNaiveRaw
-                        .Select(p => new CGPoint(Math.Round(p.X, 5), Math.Round(p.Y, 5)))
-                        .OrderBy(p => p, comparer)
-                        .ToList();
-                    sb.Append($"{sw.Elapsed.TotalMilliseconds} ms - Naive\n");
+                        sw.Stop();
+                        var resultsNaive = resultsNaiveRaw
+                            .Select(p => new CGPoint(Math.Round(p.X, 5), Math.Round(p.Y, 5)))
+                            .OrderBy(p => p, comparer)
+                            .ToList();
+                        sb.Append($"{sw.Elapsed.TotalMilliseconds} ms - Naive\n");
 
-                    var sw1 = Stopwatch.StartNew();
-                    var resultsBentleyOttmannRaw = GeometryCalculations.IntersectionsBentleyOttmann(segments);
-                    sw1.Stop();
-                    var resultsBentleyOttmann = resultsBentleyOttmannRaw.Keys
-                        .Select(p => new CGPoint(Math.Round(p.X, 5), Math.Round(p.Y, 5)))
-                        .OrderBy(p => p, comparer)
-                        .ToList();
+                        var sw1 = Stopwatch.StartNew();
+                        var resultsBentleyOttmannRaw = GeometryCalculations.IntersectionsBentleyOttmann(segments);
+                        sw1.Stop();
+                        var resultsBentleyOttmann = resultsBentleyOttmannRaw.Keys
+                            .Select(p => new CGPoint(Math.Round(p.X, 5), Math.Round(p.Y, 5)))
+                            .OrderBy(p => p, comparer)
+                            .ToList();
                         sb.Append($"{sw1.Elapsed.TotalMilliseconds} ms - Bentley-Ottmann\n");
 
-                    var equals = true;
-                    for (var i = 0; i < resultsNaive.Count; i++)
-                    {
-                        if (resultsNaive[i] != resultsBentleyOttmann[i])
+                        var equals = true;
+                        for (var i = 0; i < resultsNaive.Count; i++)
                         {
-                            equals = false;
-                            break;
+                            if (resultsNaive[i] != resultsBentleyOttmann[i])
+                            {
+                                equals = false;
+                                break;
+                            }
+                            if (i == resultsNaive.Count - 1)
+                                equals = true;
                         }
-                        if (i == resultsNaive.Count - 1)
-                            equals = true;
-                    }
 
-                    if (!equals)
-                        throw new Exception("One of the algorithms is incorrect");
+                        if (!equals)
+                            throw new Exception("One of the algorithms is incorrect");
+                    });
 
-                    LblCalculations.Content = new TextBlock
-                    {
-                        Text = sb.ToString()
-                    };
+                    LblCalculations.Content = new TextBlock { Text = sb + "(WARNING: currently the speed test might not be reliable because Bentley-Ottmann calculates using Big Rational Numbers)" };
 
                     break;
                 }
@@ -2004,8 +2035,6 @@ namespace WPFComputationalGeometry.Source.Windows
 
         private void UpdateInputs()
         {
-            HighlightSelectedRows();
-
             _rddlElementTypeSelectingProgramatically = true;
 
             if (RnumXStart.IsEnabled == false) RnumXStart.IsEnabled = true;
@@ -2070,34 +2099,6 @@ namespace WPFComputationalGeometry.Source.Windows
             });
 
             _rddlElementTypeSelectingProgramatically = false;
-        }
-
-        private void HighlightSelectedRows()
-        {
-            Dispatcher.Invoke(DispatcherPriority.Background, new Action(() =>
-            {
-                var items = RgvData.Items.Cast<ChartElement>().ToArray();
-                var selecteditems = RgvData.SelectedItems.Cast<ChartElement>().ToArray();
-                var unselecteditems = items.Except(selecteditems).ToArray();
-
-                foreach (var ai in selecteditems)
-                {
-                    var row = (DataGridRow)RgvData.ItemContainerGenerator.ContainerFromItem(ai);
-
-                    row.Background = (Brush)FindResource("HighlightedBrush");
-                    row.Foreground = Brushes.White;
-                }
-
-                foreach (var ri in unselecteditems)
-                {
-                    var row = (DataGridRow)RgvData.ItemContainerGenerator.ContainerFromItem(ri);
-                    if (row != null)
-                    {
-                        row.Background = (Brush)FindResource("RowBrush");
-                        row.Foreground = Brushes.White;
-                    }
-                }
-            }));
         }
 
         private void TxtLoadFromFile_DragEnter(object sender, DragEventArgs e)
@@ -2418,6 +2419,121 @@ namespace WPFComputationalGeometry.Source.Windows
         private List<UIElement> SelectedElements()
         {
             return RgvData.SelectedItems.Cast<ChartElement>().Select(el => el.PhysicalRepresentation).ToList();
+        }
+
+        private void mainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e) {  }
+
+        private void btnMinimizeToTray_Click(object sender, RoutedEventArgs e)
+        {
+            WindowState = WindowState.Minimized;
+            ShowInTaskbar = false;
+            _notifyIcon.Visible = true;
+            _notifyIcon.ShowBalloonTip(1500);
+        }
+
+        private void btnMinimizeToTray_MouseEnter(object sender, MouseEventArgs e)
+        {
+            ((Button)sender).Background = new SolidColorBrush(Color.FromRgb(0, 0, 180));
+        }
+
+        private void btnMinimizeToTray_MouseLeave(object sender, MouseEventArgs e)
+        {
+            ((Button)sender).Background = Brushes.Transparent;
+        }
+
+        private void btnMinimize_Click(object sender, RoutedEventArgs e)
+        {
+            WindowState = WindowState.Minimized;
+        }
+
+        private void btnMinimize_MouseEnter(object sender, MouseEventArgs e)
+        {
+            ((Button)sender).Background = new SolidColorBrush(Color.FromRgb(76, 76, 76));
+        }
+
+        private void btnMinimize_MouseLeave(object sender, MouseEventArgs e)
+        {
+            ((Button)sender).Background = Brushes.Transparent;
+        }
+
+        private void btnClose_Click(object sender, RoutedEventArgs e)
+        {
+            Close();
+        }
+
+        private void btnClose_MouseEnter(object sender, MouseEventArgs e)
+        {
+            ((Button)sender).Background = new SolidColorBrush(Color.FromRgb(76, 76, 76));
+            ((Button)sender).Foreground = Brushes.Black;
+        }
+
+        private void btnClose_MouseLeave(object sender, MouseEventArgs e)
+        {
+            ((Button)sender).Background = Brushes.Transparent;
+            ((Button)sender).Foreground = Brushes.White;
+        }
+
+        private bool _restoreForDragMove;
+
+        private void gridTitleBar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ClickCount == 2)
+            {
+                if (ResizeMode != ResizeMode.CanResize && ResizeMode != ResizeMode.CanResizeWithGrip)
+                    return;
+
+                WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
+            }
+            else
+            {
+                _restoreForDragMove = WindowState == WindowState.Maximized;
+                DragMove();
+            }
+        }
+
+        private void gridTitleBar_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (_restoreForDragMove && e.LeftButton == MouseButtonState.Pressed)
+            {
+                _restoreForDragMove = false;
+
+                var wndMousePos = e.MouseDevice.GetPosition(this);
+                var screenMousePos = this.WindowPointToScreen(wndMousePos);
+
+                Left = screenMousePos.X - Width / (ActualWidth / wndMousePos.X);
+                Top = screenMousePos.Y - Height / (ActualHeight / wndMousePos.Y);
+
+                WindowState = WindowState.Normal;
+
+                DragMove();
+            }
+        }
+
+        private void gridTitleBar_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            _restoreForDragMove = false;
+        }
+
+        private void gridTitleBar_MouseEnter(object sender, MouseEventArgs e)
+        {
+            ((Grid)sender).Highlight(((SolidColorBrush)FindResource("MouseOverTitleBarBrush")).Color);
+        }
+
+        private void gridTitleBar_MouseLeave(object sender, MouseEventArgs e)
+        {
+            ((Grid)sender).Highlight(((SolidColorBrush)FindResource("DefaultWindowBrush")).Color);
+        }
+
+        private void notifyIcon_Click(object sender, EventArgs e)
+        {
+            ShowInTaskbar = true;
+            _notifyIcon.Visible = false;
+            WindowState = WindowState.Normal;
+
+            if (IsVisible)
+                Activate();
+            else
+                Show();
         }
     }
 

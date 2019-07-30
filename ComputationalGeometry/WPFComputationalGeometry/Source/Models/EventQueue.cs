@@ -1,5 +1,6 @@
 ﻿using System;
 using C5;
+using WPFComputationalGeometry.Source.Models.Comparers;
 
 namespace WPFComputationalGeometry.Source.Models
 {

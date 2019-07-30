@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace WPFComputationalGeometry.Source.Models
+namespace WPFComputationalGeometry.Source.Models.Comparers
 {
     public class PointXCoordComparer : Comparer<Point>
     {

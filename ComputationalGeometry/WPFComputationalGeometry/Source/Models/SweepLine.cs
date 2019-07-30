@@ -51,15 +51,13 @@ namespace WPFComputationalGeometry.Source.Models
 
         public EventPoint Above(EventPoint ep) // Zdarzenie nad obecnym
         {
-            EventPoint above;
-            EventPoints.TrySuccessor(ep, out above);
+            EventPoints.TrySuccessor(ep, out var above);
             return above;
         }
 
         public EventPoint Below(EventPoint ep) // Zdarzenie pod obecnym
         {
-            EventPoint below;
-            EventPoints.TryPredecessor(ep, out below);
+            EventPoints.TryPredecessor(ep, out var below);
             return below;
         }
 

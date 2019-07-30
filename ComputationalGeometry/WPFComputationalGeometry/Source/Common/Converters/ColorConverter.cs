@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Media;
 
-namespace WPFComputationalGeometry.Source.Models
+namespace WPFComputationalGeometry.Source.Common.Converters
 {
     public class ColorConverter
     {

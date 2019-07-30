@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace WPFComputationalGeometry.Source.Models
+namespace WPFComputationalGeometry.Source.Models.Comparers
 {
     public class EventPointXThenYComparer : Comparer<EventPoint>
     {

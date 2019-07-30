@@ -4,6 +4,7 @@ using System.Linq;
 using MoreLinq;
 using WPFComputationalGeometry.Source.Common.Extensions;
 using WPFComputationalGeometry.Source.Common.Extensions.Collections;
+using WPFComputationalGeometry.Source.Models.Comparers;
 
 namespace WPFComputationalGeometry.Source.Models
 {

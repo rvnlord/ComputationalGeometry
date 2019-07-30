@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
+using WPFComputationalGeometry.Source.Common.Extensions;
 using gc = WPFComputationalGeometry.Source.Models.GeometryCalculations;
 
-namespace WPFComputationalGeometry.Source.Models
+namespace WPFComputationalGeometry.Source.Models.Comparers
 {
     public class PointAngularComparer : Comparer<Point>
     {
@@ -21,9 +22,9 @@ namespace WPFComputationalGeometry.Source.Models
             var op2 = new LineSegment(o, p2);
             var pos = gc.PointOrientationTest(p1, op2); // po lewej stronie > 0
 
-            if (pos > 0 || (pos == 0 && op1.Length() < op2.Length()))
+            if (pos > 0 || pos.Eq(0) && op1.Length() < op2.Length())
                 return Inverse ? -1 : 1;
-            if (pos < 0 || (pos == 0 && op1.Length() > op2.Length()))
+            if (pos < 0 || pos.Eq(0) && op1.Length() > op2.Length())
                 return Inverse ? 1 : -1;
 
             return 0;

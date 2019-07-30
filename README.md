@@ -1,9 +1,9 @@
-# WPF Computational Geometry Companion:
+# WPF Computational Geometry Companion - v1.02:
 
 ### Download:
 
-[![Download](https://img.shields.io/badge/Dwonload-WPFComputationalGeometry----v1.01.exe-darkblue)](https://github.com/rvnlord/ComputationalGeometry/releases/download/v1.01/WPFComputationalGeometry-v1.01.exe)
-![SHA256](https://img.shields.io/badge/SHA256-7B108D45CC8885538CE12BCCFA98ADE5A5E83955728A00D5A0A47BCBA81C5034-darkgreen.svg)
+[![Download](https://img.shields.io/badge/Dwonload-WPFComputationalGeometry----v1.02.exe-darkblue)](https://github.com/rvnlord/ComputationalGeometry/releases/download/v1.02/WPFComputationalGeometry-v1.02.exe)
+![SHA256](https://img.shields.io/badge/SHA256-A2C87FF1EB097F4B2E9712772D06F9D6214B5B5B7957B6B418524CC6FF507004-darkgreen.svg)
 
 ### Overview of Features:
 
@@ -32,13 +32,13 @@
 * Import Export Data by Dragging and Dropping XML files
 * Support for multi selecting objects on chart as well as in the table
 
-![ComputationalGeometry1](/Images/2019-07-29_222204.png?raw=true "ComputationalGeometry1")
+![ComputationalGeometry1](/Images/2019-07-30_163809.png?raw=true "ComputationalGeometry1")
 
-![ComputationalGeometry2](/Images/2019-07-29_222236.png?raw=true "ComputationalGeometry2")
+![ComputationalGeometry2](/Images/2019-07-30_163838.png?raw=true "ComputationalGeometry2")
 
-![ComputationalGeometry3](/Images/2019-07-29_222630.png?raw=true "ComputationalGeometry3")
+![ComputationalGeometry3](/Images/2019-07-30_163948.png?raw=true "ComputationalGeometry3")
 
-![ComputationalGeometry4](/Images/2019-07-29_223045.png?raw=true "ComputationalGeometry4")
+![ComputationalGeometry4](/Images/2019-07-30_164050.png?raw=true "ComputationalGeometry4")
 
 
 

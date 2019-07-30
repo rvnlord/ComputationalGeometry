@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using gc = WPFComputationalGeometry.Source.Models.GeometryCalculations;
 
-namespace WPFComputationalGeometry.Source.Models
+namespace WPFComputationalGeometry.Source.Models.Comparers
 {
     public class PolarAngleComparer : IEqualityComparer<Point>
     {

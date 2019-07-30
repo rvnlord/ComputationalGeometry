@@ -1,5 +1,6 @@
 ﻿using System;
 using WPFComputationalGeometry.Source.Common.Extensions;
+using WPFComputationalGeometry.Source.Models.Comparers;
 
 namespace WPFComputationalGeometry.Source.Models
 {
@@ -48,11 +49,12 @@ namespace WPFComputationalGeometry.Source.Models
             Line = new Line(StartPoint, EndPoint);
         }
 
-        public void NormalizeEndPoints()
+        public LineSegment NormalizeEndPoints()
         {
             if (IsLeftMostPointFirst())
-                return;
+                return this;
             SwapEndPoints();
+            return this;
         }
 
         public Point[] EndPoints()

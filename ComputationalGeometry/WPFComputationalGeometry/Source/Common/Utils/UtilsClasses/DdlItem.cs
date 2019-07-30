@@ -1,4 +1,4 @@
-﻿namespace WPFComputationalGeometry.Source.Models
+﻿namespace WPFComputationalGeometry.Source.Common.Utils.UtilsClasses
 {
     public class DdlItem
     {
