@@ -1,4 +1,4 @@
-# WPF Computational Geometry Companion - v1.02:
+# WPF Computational Geometry Companion v1.02:
 
 ### Download:
 
